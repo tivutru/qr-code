@@ -1,0 +1,252 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Gửi Em 💌</title>
+    <style>
+        html, body {
+            margin: 0; padding: 0; height: 100%; overflow: hidden;
+            font-family: 'Segoe UI', sans-serif;
+            background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb') no-repeat center center fixed;
+            background-size: cover;
+        }
+        .container {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); text-align: center; color: white;
+            animation: fadeIn 2s ease-in-out;
+        }
+        h1 {
+            font-size: 2.8em; margin-bottom: 10px;
+            animation: pulse 2s infinite, rainbow 5s linear infinite;
+        }
+        .lover-img {
+            width: 160px; height: 160px; border-radius: 50%;
+            object-fit: cover; border: 4px solid #fff;
+            box-shadow: 0 0 20px rgba(255,255,255,0.7);
+            margin-bottom: 20px;
+        }
+        audio {
+            margin-top: 20px; filter: drop-shadow(0 0 10px #fff);
+        }
+        .marquee {
+            position: fixed; bottom: 0; width: 100%;
+            font-size: 1.4em; background: rgba(0,0,0,0.5);
+            color: #fff; padding: 10px 0; white-space: nowrap;
+            overflow: hidden;
+        }
+        .marquee span {
+            display: inline-block; padding-left: 100%;
+            animation: marquee 15s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        @keyframes rainbow {
+            0% { color: #ff8a8a; }
+            25% { color: #ffd88a; }
+            50% { color: #8affc1; }
+            75% { color: #8ad1ff; }
+            100% { color: #ff8ae2; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        .love-text {
+    position: fixed;
+    font-size: 24px;
+    font-weight: bold;
+    z-index: 10000;
+    pointer-events: none;
+    animation: flyUp 3s linear forwards;
+}
+
+@keyframes flyUp {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-200px) scale(1.5);
+        opacity: 0;
+    }
+}
+
+    </style>
+</head>
+<script>
+    function createLoveText() {
+        const love = document.createElement("div");
+        love.className = "love-text";
+        love.innerText = "I ❤️ You";
+    
+        // Random position
+        love.style.left = Math.random() * window.innerWidth + "px";
+        love.style.top = Math.random() * window.innerHeight + "px";
+    
+        // Random color
+        const colors = ["#ff4d4d", "#ff66cc", "#66ffff", "#ffff66", "#ff9966", "#cc99ff"];
+        love.style.color = colors[Math.floor(Math.random() * colors.length)];
+    
+        document.body.appendChild(love);
+    
+        // Remove after animation
+        setTimeout(() => love.remove(), 3000);
+    }
+    
+    // Lặp lại
+    setInterval(createLoveText, 600);
+    </script>
+    
+<body onload="initFireworks(), initBubbles()">
+<div id="start-screen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:#000;color:#fff;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center">
+  <h2 style="font-size:1.5em;margin-bottom:20px">💌 Nhấn để bắt đầu món quà!</h2>
+  <button onclick="startExperience()" style="padding:12px 24px;font-size:1.2em;background:#ff6699;color:white;border:none;border-radius:12px;">Bắt đầu</button>
+</div>
+<script>
+function startExperience() {
+  document.getElementById("start-screen").style.display = "none";
+  const audio = document.querySelector("audio");
+  if (audio) audio.play();
+  openFullscreen();
+}
+</script>
+
+<canvas id="fireworksCanvas"></canvas>
+<canvas id="bubblesCanvas"></canvas>
+
+<div class="container">
+    <img src="https://i.imgur.com/4M34hi2.jpg" class="lover-img" alt="Người yêu">
+    <h1>Anh yêu em ❤️</h1>
+    <audio controls autoplay loop>
+        <source src="iu.mp3" type="audio/mp3">
+        Trình duyệt của bạn không hỗ trợ phát nhạc.
+    </audio>
+</div>
+
+<div class="marquee"><span>💌 Gửi em: Anh yêu em rất nhiều... mãi mãi và không đổi thay 💖💫</span></div>
+
+<script>
+// Fullscreen
+function openFullscreen() {
+    const elem = document.documentElement;
+    if (elem.requestFullscreen) elem.requestFullscreen();
+    else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+    else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
+}
+
+// Fireworks
+function initFireworks() {
+    const canvas = document.getElementById('fireworksCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const fireworks = [];
+
+    function Firework(x, y) {
+        this.x = x; this.y = y;
+        this.particles = [];
+        for (let i = 0; i < 30; i++) {
+            this.particles.push({
+                x: x, y: y,
+                vx: (Math.random() - 0.5) * 5,
+                vy: (Math.random() - 0.5) * 5,
+                alpha: 1
+            });
+        }
+    }
+
+    Firework.prototype.update = function() {
+        this.particles.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.alpha -= 0.02;
+        });
+        this.particles = this.particles.filter(p => p.alpha > 0);
+    };
+
+    Firework.prototype.draw = function() {
+        this.particles.forEach(p => {
+            ctx.globalAlpha = p.alpha;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+            ctx.fillStyle = 'white';
+            ctx.fill();
+        });
+        ctx.globalAlpha = 1;
+    };
+
+    function loop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (Math.random() < 0.05) {
+            fireworks.push(new Firework(Math.random() * canvas.width, Math.random() * canvas.height / 2));
+        }
+        fireworks.forEach(fw => {
+            fw.update();
+            fw.draw();
+        });
+        requestAnimationFrame(loop);
+    }
+    loop();
+}
+
+// Bubbles
+function initBubbles() {
+    const canvas = document.getElementById('bubblesCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const bubbles = [];
+
+    function Bubble() {
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height + 50;
+        this.radius = 10 + Math.random() * 20;
+        this.vy = - (1 + Math.random() * 2);
+        this.alpha = 0.5 + Math.random() * 0.5;
+    }
+
+    Bubble.prototype.update = function() {
+        this.y += this.vy;
+        this.alpha -= 0.005;
+    };
+
+    Bubble.prototype.draw = function() {
+        ctx.globalAlpha = this.alpha;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+    };
+
+    function loop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (Math.random() < 0.1) {
+            bubbles.push(new Bubble());
+        }
+        bubbles.forEach(b => {
+            b.update();
+            b.draw();
+        });
+        // remove old
+        for (let i = bubbles.length - 1; i >= 0; i--) {
+            if (bubbles[i].alpha <= 0) bubbles.splice(i, 1);
+        }
+        requestAnimationFrame(loop);
+    }
+    loop();
+}
+</script>
+
+</body>
+</html>
